@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@apollo/client';
-import { getCharacters } from './queries';
-import { Button, Card, CardContent, CardMedia, CircularProgress, Container, TextField, Typography } from '@material-ui/core';
 import styled from 'styled-components'
+import { Button, Card, CardContent, CardMedia, CircularProgress, Container, TextField, Typography } from '@material-ui/core';
+import { getCharacters } from './queries';
+import { Result } from './types';
 
 const GridContainer = styled(Container)`
   display: grid !important;
@@ -55,7 +56,7 @@ function App() {
         <SearchButton onClick={() => fetchMore({variables: {name}}).then(result => result)}>Find</SearchButton>
       </Search>
     <GridContainer>
-      {data?.characters?.results?.map(((item: any) => (
+      {data?.characters?.results?.map(((item: Result) => (
         <Card key={item.id} style={{width: 250, marginTop: 10}}>
           <CardMedia component="img" height="200" image={item.image}/>
           <CardContent>

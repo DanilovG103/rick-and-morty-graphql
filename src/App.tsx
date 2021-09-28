@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@apollo/client';
 import { getCharacters } from './queries';
-import { Button, Card, CardContent, CardMedia, Container, TextField, Typography } from '@material-ui/core';
+import { Button, Card, CardContent, CardMedia, CircularProgress, Container, TextField, Typography } from '@material-ui/core';
 import styled from 'styled-components'
 
 const GridContainer = styled(Container)`
@@ -15,11 +15,24 @@ const Search = styled.div`
   justify-content: center;
 `
 
+const SearchButton = styled(Button)`
+  align-self: flex-end;
+  padding: 4px 20px;
+`
+
+const Loader = styled(Container)`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+`
+
 function App() {
   const [page, setPage] = useState(1)
+  const [name, setName] = useState('')
   const {data, loading, fetchMore} = useQuery(getCharacters, {
     variables: {
-      page
+      page,
+      name
     }
   })
 
@@ -27,15 +40,19 @@ function App() {
     if (fetchMore !== undefined) {
       fetchMore({variables: {page}}).then(result => result)
     }
-  },[page, fetchMore])
+  },[page, name, fetchMore])
 
-  if (loading) return <h1>Loading...</h1>
+  if (loading) return (
+    <Loader>
+      <CircularProgress/>
+    </Loader>
+  )
 
   return (
     <Container>
       <Search>
-        <TextField label="Character name" variant="standard" />
-        <Button>Find</Button>
+        <TextField label="Character name" variant="standard" value={name} onChange={(e) => setName(e.target.value)}/>
+        <SearchButton onClick={() => fetchMore({variables: {name}}).then(result => result)}>Find</SearchButton>
       </Search>
     <GridContainer>
       {data?.characters?.results?.map(((item: any) => (

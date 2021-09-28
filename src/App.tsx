@@ -10,15 +10,11 @@ const GridContainer = styled(Container)`
   grid-template-columns: 1fr 1fr 1fr 1fr;
 `
 
-const Search = styled.div`
+const Search = styled.form`
   display: flex;
   align-items: center;
-  justify-content: center;
-`
-
-const SearchButton = styled(Button)`
-  align-self: flex-end;
-  padding: 4px 20px;
+  justify-content: space-between;
+  padding: 25px;
 `
 
 const Loader = styled(Container)`
@@ -39,43 +35,44 @@ function App() {
 
   useEffect(() => {
     if (fetchMore !== undefined) {
-      fetchMore({variables: {page}}).then(result => result)
+      fetchMore({variables: {page,name}}).then(result => result)
     }
   },[page, name, fetchMore])
-
-  if (loading) return (
-    <Loader>
-      <CircularProgress/>
-    </Loader>
-  )
 
   return (
     <Container>
       <Search>
         <TextField label="Character name" variant="standard" value={name} onChange={(e) => setName(e.target.value)}/>
-        <SearchButton onClick={() => fetchMore({variables: {name}}).then(result => result)}>Find</SearchButton>
+        <div>
+          <Button disabled={page === 1} onClick={() => setPage(prev => prev - 1)}>PrevPage</Button>
+          <Button onClick={() => setPage(prev => prev + 1)}>NextPage</Button>
+        </div>
       </Search>
     <GridContainer>
-      {data?.characters?.results?.map(((item: Result) => (
-        <Card key={item.id} style={{width: 250, marginTop: 10}}>
-          <CardMedia component="img" height="200" image={item.image}/>
-          <CardContent>
-            <Typography color="textPrimary">
-              {item.name}
-            </Typography>
-            <Typography color="textSecondary">
-              Status: {item.status}
-            </Typography>
-            <Typography color="textSecondary">
-              Last location: 
-            </Typography>
-            {item.location.name}
-          </CardContent>
-        </Card>
-      )))}
+      {(loading) ? (
+        <Loader>
+          <CircularProgress/>
+        </Loader>
+      ) : (
+        data?.characters?.results?.map((item: Result) => (
+          <Card key={item.id} style={{width: 250, marginTop: 10}}>
+            <CardMedia component="img" height="200" image={item.image}/>
+            <CardContent>
+              <Typography color="textPrimary">
+                {item.name}
+              </Typography>
+              <Typography color="textSecondary">
+                Status: {item.status}
+              </Typography>
+              <Typography color="textSecondary">
+                Last location: 
+              </Typography>
+              {item.location.name}
+            </CardContent>
+          </Card>
+        ) 
+      ))}
       </GridContainer>
-      <Button disabled={page === 1} onClick={() => setPage(prev => prev - 1)}>PrevPage</Button>
-      <Button onClick={() => setPage(prev => prev + 1)}>NextPage</Button>
     </Container>
   );
 }

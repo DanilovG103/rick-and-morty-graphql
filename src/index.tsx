@@ -4,10 +4,22 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
 
+const cache = new InMemoryCache({
+  typePolicies: {
+    Query: {
+      fields: {
+        Characters: {
+          keyArgs: false
+        }
+      }
+    }
+  }
+})
+
 const client = new ApolloClient({
   uri: "https://rickandmortyapi.com/graphql",
-  cache: new InMemoryCache()
-})
+  cache
+}) 
 
 ReactDOM.render(
   <React.StrictMode>

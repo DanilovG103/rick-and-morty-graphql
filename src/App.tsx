@@ -1,24 +1,45 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@apollo/client';
 import { getCharacters } from './queries';
-import { Card, CardContent, CardMedia, Container, Typography } from '@material-ui/core';
+import { Button, Card, CardContent, CardMedia, Container, TextField, Typography } from '@material-ui/core';
 import styled from 'styled-components'
 
 const GridContainer = styled(Container)`
-  display: grid;
+  display: grid !important;
   grid-template-columns: 1fr 1fr 1fr 1fr;
 `
 
+const Search = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
+
 function App() {
-  const {data, loading, error} = useQuery(getCharacters)
+  const [page, setPage] = useState(1)
+  const {data, loading, fetchMore} = useQuery(getCharacters, {
+    variables: {
+      page
+    }
+  })
+
+  useEffect(() => {
+    if (fetchMore !== undefined) {
+      fetchMore({variables: {page}}).then(result => result)
+    }
+  },[page, fetchMore])
 
   if (loading) return <h1>Loading...</h1>
-  if (error) return <h1>{error.message}</h1>
 
   return (
+    <Container>
+      <Search>
+        <TextField label="Character name" variant="standard" />
+        <Button>Find</Button>
+      </Search>
     <GridContainer>
       {data?.characters?.results?.map(((item: any) => (
-        <Card style={{width: 250, marginTop: 10}}>
+        <Card key={item.id} style={{width: 250, marginTop: 10}}>
           <CardMedia component="img" height="200" image={item.image}/>
           <CardContent>
             <Typography color="textPrimary">
@@ -34,7 +55,10 @@ function App() {
           </CardContent>
         </Card>
       )))}
-    </GridContainer>
+      </GridContainer>
+      <Button disabled={page === 1} onClick={() => setPage(prev => prev - 1)}>PrevPage</Button>
+      <Button onClick={() => setPage(prev => prev + 1)}>NextPage</Button>
+    </Container>
   );
 }
 

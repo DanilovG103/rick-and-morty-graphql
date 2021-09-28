@@ -1,0 +1,15 @@
+{
+  "name": "React-GraphQl",
+  "schemaPath": "schema.graphql",
+  "extensions": {
+    "endpoints": {
+      "Default Graphql Endpoint": {
+        "uri": "https://rickandmortyapi.com/graphql",
+        "headers": {
+          "user-agent": "JS GraphQl"
+        },
+        "introspect": false
+      }
+    }
+  }
+}
